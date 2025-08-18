@@ -1,9 +1,9 @@
 Integration Notes
 
 Qdrant Setup (Lines 663–664):
-Add your Qdrant URL and Qdrant API key by creating a collection and uploading the relevant documents.
+Add your Qdrant URL and Qdrant API key by creating a collection and uploading the relevant documents in it.
 
-Note: We are keeping our API live until 28th August 2025 so you can verify the results.
+Note: We are keeping our API and URL live until 28th August 2025 so you can verify the results.
 
 LLM Setup (Line 765):
 Insert your Gemini API key. You can also choose from different Gemini models. Higher-capacity models generally provide better accuracy, but in our case gemini-flash-1.5 worked very well.
