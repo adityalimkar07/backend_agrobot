@@ -660,8 +660,8 @@ class QdrantSearchEngine:
     
     def __init__(self, collection_name: str = "AGRICULTURE", host: str = "localhost", port: int = 6333):
         self.client = QdrantClient(
-    url="QDRANT_URL", 
-    api_key="QDRANT_API_KEY",
+    url="https://ea333494-3863-460f-840e-f5e8c51384bd.eu-central-1-0.aws.cloud.qdrant.io:6333", 
+    api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.DG8-n96QYTB9-WadofSKUmoSF-5yKiY0FkUCr7ixloM",
     )       
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
         self.collection_name = collection_name
@@ -762,7 +762,7 @@ class BM25SearchEngine:
 
 
 # Shared instances
-llm = GeminiLLM(model = "gemini-1.5-flash", api_key = 'GEMINI_API_KEY')  # or GeminiLLM(model="gemini-1.5-flash")
+llm = GeminiLLM(model = "gemini-1.5-flash", api_key = 'AIzaSyBqfF_Ue1rt0B24NNM8Q1WkMryY9hFEui4')  # or GeminiLLM(model="gemini-1.5-flash")
 query_engine = QueryEngine()
 reasoning_engine = ReasoningEngine()
 info_filter = InformationFilter()

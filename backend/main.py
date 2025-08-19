@@ -1,6 +1,9 @@
 # main2.py
 # docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
 
+from geopy.geocoders import Nominatim
+import re
+
 from weather_api import WeatherAPI
 import asyncio
 from engine import (
@@ -13,6 +16,58 @@ import time
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 import re
+
+# Global variables for user location (will be updated when location is obtained)
+lat = 18.52  # Default fallback (Pune)
+lon = 73.88  # Default fallback (Pune)
+user_location_obtained = False
+
+def get_user_location():
+    """Get user's current location coordinates"""
+    global lat, lon, user_location_obtained
+    
+    try:
+        # For Python scripts, we can use requests to get location from IP
+        import requests
+        
+        # Method 1: Try IP-based geolocation (most reliable for Python)
+        try:
+            response = requests.get('http://ip-api.com/json/', timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    lat = float(data.get('lat', lat))
+                    lon = float(data.get('lon', lon))
+                    user_location_obtained = True
+                    print(f"📍 Location obtained via IP: {data.get('city', 'Unknown')}, {data.get('regionName', 'Unknown')} ({lat}, {lon})")
+                    return True
+        except Exception as e:
+            print(f"IP geolocation failed: {e}")
+        
+        # Method 2: Try alternative IP service
+        try:
+            response = requests.get('https://ipapi.co/json/', timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if 'latitude' in data and 'longitude' in data:
+                    lat = float(data['latitude'])
+                    lon = float(data['longitude'])
+                    user_location_obtained = True
+                    print(f"📍 Location obtained via backup IP service: {data.get('city', 'Unknown')}, {data.get('region', 'Unknown')} ({lat}, {lon})")
+                    return True
+        except Exception as e:
+            print(f"Backup IP geolocation failed: {e}")
+            
+        # If both methods fail, keep default coordinates
+        print(f"⚠️ Could not obtain user location, using default: Pune ({lat}, {lon})")
+        return False
+        
+    except Exception as e:
+        print(f"Location detection error: {e}")
+        return False
+
+# Try to get user location on startup
+get_user_location()
 
 # Import translation libraries (you'll need to install these)
 try:
@@ -398,7 +453,8 @@ class MultilingualArchitecturalRAGPipeline(ArchitecturalRAGPipeline):
         english_query = multilingual_query.selected_translation
         
         # ALWAYS fetch weather context (let LLM decide if it's relevant)
-        weather_context = await self.weather_api.get_current_weather_context()
+        global lat, lon
+        weather_context = await self.weather_api.get_current_weather_context(latitude=lat, longitude=lon)
         
         # Process with existing RAG architecture
         result = await super().invoke(english_query)
@@ -697,11 +753,12 @@ async def main():
     # Test queries in multiple languages
     test_queries = [
         # Current weather queries
-        "What is the price of Soyabean in Rajasthan today?",
-        "What is the price of Barley in Uttar Pradesh today?",
-        "What is the price of Carrot in Haryana today?",
-        "What's the weather like today?",
-        "आज मौसम कैसा है?",
+        "What is the price of rice in Pune today?",
+        "What is the weather today in Pune?",
+        "What seed variety suits this unpredictable weather?",
+        "Will next week's temperature drop kill my rice yield?",
+        "Can I afford to wait for the market to improve?",
+        "Where can I get affordable credit, and will any state/central government policy help me with finances?",
         "Will it rain tomorrow?",
         "What will be the temperature next week?",
         
