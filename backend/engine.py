@@ -762,7 +762,7 @@ class BM25SearchEngine:
 
 
 # Shared instances
-llm = GeminiLLM(model = "gemini-1.5-flash", api_key = 'AIzaSyBqfF_Ue1rt0B24NNM8Q1WkMryY9hFEui4')  # or GeminiLLM(model="gemini-1.5-flash")
+llm = GeminiLLM(model = "gemini-1.5-flash", api_key = 'GEMINI_API_KEY')  # or GeminiLLM(model="gemini-1.5-flash")
 query_engine = QueryEngine()
 reasoning_engine = ReasoningEngine()
 info_filter = InformationFilter()
@@ -961,4 +961,5 @@ class SimpleRAGPipeline:
 
 
 # chunking, reducing data feed to BM25, supporting_evidence, how to handle database info, language biasness
+
 # whisper audio to text, issue in language conversion 
